@@ -1,0 +1,14 @@
+{
+  "name": "mongo-ingressantes-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "tasks.max": "1",
+    "mongodb.hosts": "mongodb:27017",                 
+    "mongodb.connection.string": "mongodb://mongodb:27017/?replicaSet=rs0",
+    "mongodb.name": "mongo-monitor",
+    "topic.prefix": "mongo",
+    "database.include.list": "engdados",
+    "collection.include.list": "engdados.ingressantes",
+    "mongodb.ssl.enabled": "false"
+  }
+}

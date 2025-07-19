@@ -1,0 +1,64 @@
+services:
+  mongo:
+      image: mongo:6.0
+      container_name: mongodb
+      ports:
+        - "27017:27017"
+      command: ["--replSet", "rs0"]
+      networks:
+        - spark_network
+
+  kafka:
+    container_name: kafka
+    hostname: kafka
+    image: apache/kafka:3.9.1
+    networks:
+      - spark_network
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'aB7kL9QwXyT2ZpR'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_HOME: '/opt/kafka'
+      PATH: '$PATH:/opt/kafka/bin'
+    ports:
+      - "9092:9092/tcp"
+    healthcheck:
+      test: bash -c "kafka-topics.sh --list --bootstrap-server kafka:9092"
+      start_period: 90s
+      interval: 15s
+      timeout: 15s
+      retries: 5
+
+  connect:
+    image: debezium/connect:3.0.0.Final
+    container_name: connect
+    networks:
+      - spark_network
+    ports:
+      - "8083:8083/tcp"
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: connect-cluster
+      CONFIG_STORAGE_TOPIC: connect-configs
+      OFFSET_STORAGE_TOPIC: connect-offsets
+      STATUS_STORAGE_TOPIC: connect-statuses
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_LOG4J_LOGGERS: org.reflections=ERROR
+
+networks:
+  spark_network:
+    external: true
