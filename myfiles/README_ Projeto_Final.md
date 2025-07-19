@@ -193,3 +193,14 @@ Após configurar o ambiente, execute as células do Jupyter Notebook na ordem.
     db.reingressantes.dataSize()
     db.reingressantes.find().limit(5)
     ```
+
+------
+### Referências: 
+
+Material de aula disponibiliado pelo professor;
+
+[Documentação pyspark.sql.streaming.DataStreamWriter.foreachBatch](https://spark.apache.org/docs/3.5.5/api/python/reference/pyspark.ss/api/pyspark.sql.streaming.DataStreamWriter.foreachBatch.html)
+
+[Dados ingressantes UFRN 2023](https://dados.ufrn.br/dataset/discentes/resource/7c88d1ec-3e83-41b3-9487-c5402fb82c6e)
+
+[Dados ingressantes UFRN 2024](https://dados.ufrn.br/dataset/discentes/resource/d271d842-929e-4d85-a1a8-c89cbdadb95d?inner_span=True)
